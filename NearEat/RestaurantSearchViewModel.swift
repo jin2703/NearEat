@@ -16,7 +16,7 @@ class RestaurantSearchViewModel: ObservableObject {
 
     /// 카카오 REST API 키 (⚠️ 실제 키를 여기에 넣어야 함)
     /// - 실제 배포 앱에서는 코드에 직접 넣지 않고, 서버나 안전한 저장소에 보관하는 것이 권장됨
-    private let kakaoRESTAPIKey: String = "Your API KEY" // 🔑 반드시 수정 필요
+    private let kakaoRESTAPIKey: String = "044c8db8cca91e6cc40bff7479b3b18c" // 🔑 반드시 수정 필요
 
     // MARK: - 공용 검색 메서드 (현재 위치 기준)
 
