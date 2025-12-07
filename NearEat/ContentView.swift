@@ -30,6 +30,12 @@ struct ContentView: View {
         ("🍢 분식", "분식")    // 분식
     ]
 
+    /// 카테고리 그리드 레이아웃 (3컬럼 → 3×2로 배치)
+    private let categoryGridColumns: [GridItem] = Array(
+        repeating: GridItem(.flexible(), spacing: 10), // 📏 폭을 균등 분배하는 컬럼
+        count: 3                                       // 👉 한 줄에 최대 3개
+    )
+
     /// 현재 선택된 카테고리 라벨 (버튼 하이라이트용)
     @State private var selectedCategoryLabel: String? = nil // 🎯 사용자가 누른 카테고리 상태
 
@@ -86,32 +92,57 @@ struct ContentView: View {
                         }
                     }
 
-                    // 🍽 카테고리 버튼 영역
-                    ScrollView(.horizontal, showsIndicators: false) { // 📜 가로 스크롤 가능한 영역
-                        HStack(spacing: 8) {                         // ➖ 카테고리 버튼들을 가로로 나열
-                            ForEach(categories, id: \.label) { item in // 🔁 각 카테고리에 대해 버튼 생성
-                                Button {
-                                    // 버튼 눌렀을 때: 선택된 카테고리 상태 업데이트 + 해당 카테고리로 검색
-                                    selectedCategoryLabel = item.label        // 🎯 현재 선택된 카테고리 라벨 저장
-                                    searchByCategory(keyword: item.keyword)   // 🔍 카테고리 기반 검색 실행
-                                } label: {
-                                    Text(item.label)                          // 🏷 이모지 + 한글 카테고리 이름
-                                        .font(.subheadline)                   // 🔡 보조 텍스트 크기
-                                        .padding(.horizontal, 12)             // 📏 좌우 여백
-                                        .padding(.vertical, 8)                // 📏 상하 여백
-                                        .background(
-                                            selectedCategoryLabel == item.label // ✅ 선택된 카테고리냐?
-                                            ? Color.blue.opacity(0.2)           //  → 선택된 경우: 옅은 파란 배경
-                                            : Color.gray.opacity(0.15)          //  → 선택 안 된 경우: 옅은 회색 배경
+                    // MARK: - 🍽 카테고리 버튼 영역 (3줄 레이아웃)
+
+                    // 1️⃣ 첫 번째 줄: "전체" 버튼을 가로로 길게 한 줄 배치
+                    if let first = categories.first {
+                        Button {
+                            // "전체" 선택 → 해당 카테고리 키워드로 검색
+                            selectedCategoryLabel = first.label
+                            searchByCategory(keyword: first.keyword)
+                        } label: {
+                            Text(first.label)                         // 🍽 전체
+                                .font(.headline)                     // 🔠 조금 더 강조된 폰트
+                                .frame(maxWidth: .infinity)          // 📏 가로 전체 폭 사용
+                                .padding(.vertical, 10)              // 📏 상하 여백
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(
+                                            selectedCategoryLabel == first.label
+                                            ? Color.blue.opacity(0.2) // ✅ 선택 시 파란 톤
+                                            : Color.gray.opacity(0.15) //  기본은 옅은 회색
                                         )
-                                        .foregroundColor(.primary)            // 🎨 글자 색 (다크/라이트 모드 자동 대응)
-                                        .cornerRadius(16)                     // 🔲 둥근 모서리
-                                }
-                            }
+                                )
+                                .foregroundColor(.primary)           // 🎨 텍스트 색상
                         }
-                        .padding(.vertical, 2) // 📏 카테고리 영역 위아래 여백
+                        .padding(.horizontal, 4)                      // 📏 좌우 약간의 여백
                     }
 
+                    // 2️⃣ 두 번째/세 번째 줄: 나머지 6개 카테고리를 3×2 그리드로 배치
+                    LazyVGrid(columns: categoryGridColumns, spacing: 10) {
+                        ForEach(Array(categories.dropFirst()), id: \.label) { item in
+                            Button {
+                                // 개별 카테고리 선택 시
+                                selectedCategoryLabel = item.label
+                                searchByCategory(keyword: item.keyword)
+                            } label: {
+                                Text(item.label)
+                                    .font(.subheadline)
+                                    .frame(maxWidth: .infinity)      // 📏 셀 안에서 가로 꽉 채우기
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .fill(
+                                                selectedCategoryLabel == item.label
+                                                ? Color.blue.opacity(0.2)
+                                                : Color.gray.opacity(0.15)
+                                            )
+                                    )
+                                    .foregroundColor(.primary)
+                            }
+                        }
+                    }
+                    .padding(.top, 4)                                 // 📏 상단 여백 약간
                 }
                 .padding(12)                                           // 📏 카드 안쪽 여백
                 .background(Color(.secondarySystemBackground))         // 🎨 시스템 보조 배경색
