@@ -45,4 +45,10 @@ SwiftUI 기반으로 제작된 NearEat은
 ---
 
 ## 📁 프로젝트 구조
-
+NearEat/
+┣ 📁 Models/
+┣ 📁 ViewModels/
+┣ 📁 Managers/
+┣ 📁 Views/
+┣ 📁 Resources/
+┣ README.md
